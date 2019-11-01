@@ -1,0 +1,82 @@
+#ifndef ${ConfigSt.ModuleName.upper()}_${ConfigSt.CalType.upper()}CALSTRUCT_H_
+#define ${ConfigSt.ModuleName.upper()}_${ConfigSt.CalType.upper()}CALSTRUCT_H_
+
+/*==============================================================================
+ *                  INCLUDE FILES
+ =============================================================================*/
+#include "Common_BrkCalStruct.h"
+#include "Common_EngCalStruct.h"
+
+/*==============================================================================
+ *                  GLOBAL TYPEDEFS (STRUCTURES, UNIONS, ENUMS)
+ =============================================================================*/
+typedef struct
+{
+% for CalDataSt in CalDatalist:
+<%
+if CalDataSt.Datatype == "uint8_t" :
+	GenDataType = "UBYTE"
+elif CalDataSt.Datatype == "uint16_t" :
+	GenDataType = "UWORD"
+elif CalDataSt.Datatype == "uint32_t" :
+	GenDataType = "ULONG"
+elif CalDataSt.Datatype == "int8_t" :
+	GenDataType = "SBYTE"
+elif CalDataSt.Datatype == "int16_t" :
+	GenDataType = "SWORD"
+elif CalDataSt.Datatype == "int32_t" :
+	GenDataType = "SLONG"
+elif CalDataSt.Datatype == "uint8" :
+	GenDataType = "UBYTE"
+elif CalDataSt.Datatype == "uint16" :
+	GenDataType = "UWORD"
+elif CalDataSt.Datatype == "uint32" :
+	GenDataType = "ULONG"
+elif CalDataSt.Datatype == "int8" :
+	GenDataType = "SBYTE"
+elif CalDataSt.Datatype == "int16" :
+	GenDataType = "SWORD"
+elif CalDataSt.Datatype == "int32" :
+	GenDataType = "SLONG"
+elif CalDataSt.Datatype == "sint8" :
+	GenDataType = "SBYTE"
+elif CalDataSt.Datatype == "sint16" :
+	GenDataType = "SWORD"
+elif CalDataSt.Datatype == "sint32" :
+	GenDataType = "SLONG"
+else :
+	GenDataType = "ERROR"
+endif
+
+if CalDataSt.Comment == "" :
+	GenComment = "NONE"
+else :
+	GenComment = CalDataSt.Comment
+ %>	/*
+	@@ SYMBOL = CalPrm${ConfigSt.ModuleName}${ConfigSt.CalType}01.${CalDataSt.SymbolName}
+	@@ A2L_TYPE = PARAMETER ${CalDataSt.SymbolName}
+	@@ DATA_TYPE = ${GenDataType}
+	@@ LAYOUT = CalPrm${ConfigSt.ModuleName}${ConfigSt.CalType}_${GenDataType}
+	@@ VAR_CRITERION = ${ConfigSt.CalType}CalVariantCriterion
+	@@ CONVERSION = ${CalDataSt.Conversion}
+	@@ DESCRIPTION = "${GenComment}"
+	@@ GROUP = ${CalDataSt.Group}
+	@@ END
+	*/    ${CalDataSt.Datatype}    ${CalDataSt.SymbolName};
+% endfor
+}${ConfigSt.ModuleName.upper()}${ConfigSt.CalType.upper()}_CAL_t;
+
+extern	${ConfigSt.ModuleName.upper()}${ConfigSt.CalType.upper()}_CAL_t	*Var${ConfigSt.ModuleName}${ConfigSt.CalType}StructCalPrm;
+
+
+% for CalDataSt in CalDatalist:
+<%
+symbolSpace = ""
+spaceNum = LenMaxSt.SymbolName - CalDataSt.SymbolNameLen
+for symbolIdx in range(spaceNum) :
+	symbolSpace = symbolSpace + " "
+%>\
+#define ${CalDataSt.DefineName}${symbolSpace}	Var${ConfigSt.ModuleName}${ConfigSt.CalType}StructCalPrm->${CalDataSt.SymbolName}
+% endfor
+
+#endif /* ${ConfigSt.ModuleName.upper()}_${ConfigSt.CalType.upper()}CALSTRUCT_H_ */
